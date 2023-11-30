@@ -24,7 +24,7 @@ class SrealityParser(Spider):
     # List of starting URLs for scraping
     start_urls: List[str] = [
         f"https://www.sreality.cz/hledani/prodej/byty?strana={i}" for i in range(1, 26)
-    ][:5]
+    ]
 
     def start_requests(self) -> Iterable[Request]:
         """Generator function to return the next URL for scraping.
