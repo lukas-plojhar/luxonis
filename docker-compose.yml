@@ -1,7 +1,7 @@
 version: "3.9"
 
 networks:
-  net:
+  app-network:
     driver: bridge
   
 services:
@@ -9,25 +9,28 @@ services:
     build: ./database
     restart: always
     ports:
-      - 5432:5432
+      - ${POSTGRES_PORT}:5432
     networks:
-      - net
+      - app-network
     environment:
-      - POSTGRES_DB=postgres
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
 
   website:
     build: ./website
     restart: always
     ports:
-      - 8080:8080
+      - ${POSTGRES_PORT}:8080
     networks:
-      - net
+      - app-network
     environment:
-      - DB_HOST=database
-      - DB_PORT=5432
-      - DB_USER=postgres
-      - DB_PASS=password
+      - POSTGRES_HOST=${POSTGRES_HOST}
+      - POSTGRES_PORT=${POSTGRES_PORT}
+      - POSTGRES_DB=${POSTGRES_DB}
+      - POSTGRES_USER=${POSTGRES_USER}
+      - POSTGRES_PASSWORD=${POSTGRES_PASSWORD}
+      - FLASK_HOST=${FLASK_HOST}
+      - FLASK_PORT=${FLASK_PORT}
     depends_on:
       - database
