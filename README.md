@@ -7,7 +7,7 @@ This project utilizes Docker containers to manage a PostgreSQL database and a Fl
 To configure the environment, set the following environment variables:
 
 | Key | Value | Description |
-| ---- | ---- |
+| ---- | ---- | ---- |
 | POSTGRES_DATABASE | postgres | Name of the PostgreSQL database |
 | POSTGRES_USER | postgres | Username for the PostgreSQL database |
 | POSTGRES_PASSWORD | password | Password for the PostgreSQL database |
