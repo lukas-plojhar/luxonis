@@ -1,45 +1,35 @@
 import subprocess
 import os
 
-from flask import Flask, render_template
-from connector import connect_to_database, DatabaseConnector
 from typing import List
+
+from connector import DatabaseConnector
+from flask import Flask, render_template
+from werkzeug.exceptions import HTTPException
 
 app: Flask = Flask(__name__)
 
 
-def _retrieve_all_property_query() -> List[List[str]]:
-    try:
-        c = connect_to_database()
-        cur = c.cursor()
-        cur.execute("SELECT * FROM results;")
-        return cur.fetchall()
-
-    except Exception as e:
-        print("Error fetiching database: ", e)
-        return []
-
-
 @app.route("/", methods=["GET"])
 def index() -> str:
-    """Flask view to return a HTML template with rendered
-    Properties from the database.
+    """Fetches property data from the database and renders an HTML template
+    presenting the data.
 
     Returns:
-        str: HTML page
+        str: The rendered HTML page.
     """
     try:
-        data: List[List[str]] = DatabaseConnector().retrieve_all_property()
+        data: List[List[str]] = DatabaseConnector().retrieve_all_properties()
         return render_template("index.html", flats=data)
 
     except Exception as e:
         print("Error rendering index template: ", e)
-        return "Error rendering page."
+        raise HTTPException(500, "Internal server error")
 
 
 if __name__ == "__main__":
-    """Function that runs the Sreality spider in a subprocess
-    and runs Flask development server for connections.
+    """Starts the Sreality spider in a subprocess to scrape data
+    and runs the Flask development server for connections.
     """
     subprocess.run("scrapy crawl sreality".split())
     app.run(host=os.environ.get("FLASK_HOST"), port=os.environ.get("FLASK_PORT"))

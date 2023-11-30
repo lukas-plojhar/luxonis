@@ -10,8 +10,8 @@ To configure the environment, set the following environment variables:
 | ---- | ---- |
 | POSTGRES_DATABASE | postgres | Name of the PostgreSQL database |
 | POSTGRES_USER | postgres | Username for the PostgreSQL database |
-| POSTGRES_PASSWORD | password | assword for the PostgreSQL database |
-| POSTGRES_HOST | database | Host to connect to, i.e. container name inside Docker network |
+| POSTGRES_PASSWORD | password | Password for the PostgreSQL database |
+| POSTGRES_HOST | database | Database host to connect to, i.e., container name inside Docker network |
 | POSTGRES_PORT | 5432 | Exposed port for the PostgreSQL database |
 | FLASK_HOST | 0.0.0.0 | Flask exposed IP address |
 | FLASK_PORT | 8080 | Flask exposed port for incoming connections |

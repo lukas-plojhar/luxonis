@@ -1,17 +1,30 @@
 from typing import Any, List, Dict, Iterable
 
 from scrapy import Spider, Request
+from scrapy.exceptions import DropItem
 from scrapy.loader import ItemLoader
 from scraper.items import SrealityPropertyItem
 from scrapy_playwright.page import PageMethod
 
 
 class SrealityParser(Spider):
+    """Scrapy spider to scrape flats from Sreality.cz website with
+    Scrapy-playwright engine.
+
+    Attributes:
+        Spider (scrapy.Spider): The Spider base class.
+    """
+
+    # Spider name for identifying the spider in Scrapy
     name: str = "sreality"
+
+    # Allowed domains to restrict scraping to Sreality.cz
     allowed_domains: List[str] = ["www.sreality.cz"]
+
+    # List of starting URLs for scraping
     start_urls: List[str] = [
         f"https://www.sreality.cz/hledani/prodej/byty?strana={i}" for i in range(1, 26)
-    ][:2]
+    ][:5]
 
     def start_requests(self) -> Iterable[Request]:
         """Generator function to return the next URL for scraping.
@@ -20,11 +33,8 @@ class SrealityParser(Spider):
         and waits for the rendering of the "div.dir-property-list" element
         before yielding the result.
 
-        Returns:
-            Iterable[Request]: The downloaded request.
-
         Yields:
-            Any: The URL to be scraped
+            Iterable[Request]: The downloaded request.
         """
         meta: Dict[str, Any] = {
             "playwright": True,
@@ -52,13 +62,12 @@ class SrealityParser(Spider):
 
             try:
                 name: str = div.css("span.name::text").get()
-                # image_url: str = div.css("a:first-child").css("img::attr(src)").get()
                 image_url: str = div.css("a:first-child img::attr(src)").get()
                 item.add_value("name", name)
                 item.add_value("image_url", image_url)
 
             except Exception as e:
-                print(f"Error scraping property data: {e}")
-                continue
+                print(f"Failed to scrape property data: {e}")
+                raise DropItem("Failed to scrape property data: {e}")
 
             yield item.load_item()
