@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Sreality.cz Mirror</title>
+        <style>
+            .content {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                flex-direction: column;
+            }
+
+            .flat-wrapper {
+                display: flex;
+                flex-wrap: wrap;
+                justify-content: space-around;
+            }
+        </style>
+    </head>
+    <body>
+        <div class="content">
+            <h1>Welcome to the Sreality.cz Mirror</h1>
+            <p>This webpage shows the first 500 entries from the Sreality.cz's <a href="https://www.sreality.cz/hledani/prodej/byty" target="_blank">flats for sale page</a>.</p>
+            <div class="flat-wrapper">
+                {% for flat in flats %}
+                    <div>
+                        <h3>{{ flat[0] }} - {{ flat[1] }}</h3>
+                        <img src="{{ flat[2] }}">
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </body>
+</html>

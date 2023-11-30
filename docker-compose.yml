@@ -1,0 +1,33 @@
+version: "3.9"
+
+networks:
+  net:
+    driver: bridge
+  
+services:
+  database:
+    build: ./database
+    restart: always
+    ports:
+      - 5432:5432
+    networks:
+      - net
+    environment:
+      - POSTGRES_DB=postgres
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=password
+
+  website:
+    build: ./website
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - net
+    environment:
+      - DB_HOST=database
+      - DB_PORT=5432
+      - DB_USER=postgres
+      - DB_PASS=password
+    depends_on:
+      - database
