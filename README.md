@@ -20,7 +20,7 @@ To configure the environment, set the following environment variables:
 
 To launch the application, execute the following command: 
 
-`docker-compose up -d`
+`docker-compose up`
 
 This command starts both Docker containers. The Flask application becomes accessible at [http://localhost:8080](http://localhost:8080). The Scrapy spider initially crawls data from Sreality.cz and stores it in the PostgreSQL database.
 
