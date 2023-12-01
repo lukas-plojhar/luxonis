@@ -1,15 +1,20 @@
-from typing import Any, List, Dict, Iterable
+"""A custom Sreality.cz scraper."""
+from typing import Any, List, Dict
 
-from scrapy import Spider, Request
+from scrapy import Spider
 from scrapy.exceptions import DropItem
+from scrapy.http import Request, Response
+from scrapy.item import Item
 from scrapy.loader import ItemLoader
 from scraper.items import SrealityPropertyItem
 from scrapy_playwright.page import PageMethod
 
 
 class SrealityParser(Spider):
-    """Scrapy spider to scrape flats from Sreality.cz website with
-    Scrapy-playwright engine.
+    """Scrapes flats from the Sreality.cz website.
+
+    It usees the Scrapy-playwright engine for scraping
+    dynamic websites.
 
     Attributes:
         Spider (scrapy.Spider): The Spider base class.
@@ -26,12 +31,12 @@ class SrealityParser(Spider):
         f"https://www.sreality.cz/hledani/prodej/byty?strana={i}" for i in range(1, 26)
     ]
 
-    def start_requests(self) -> Iterable[Request]:
-        """Generator function to return the next URL for scraping.
+    def start_requests(self) -> Request:
+        """Generate URLs for scraping.
 
-        Uses the scrapy-playwright engine to scrape dynamic websites
-        and waits for the rendering of the "div.dir-property-list" element
-        before yielding the result.
+        This function uses the scrapy-playwright engine to scrape dynamic
+        websites and waits for the rendering of the "div.dir-property-list"
+        element before yielding the result.
 
         Yields:
             Iterable[Request]: The downloaded request.
@@ -48,14 +53,17 @@ class SrealityParser(Spider):
         for start_url in self.start_urls:
             yield Request(start_url, meta=meta)
 
-    def parse(self, response: Any) -> Iterable[SrealityPropertyItem]:
-        """Function triggered on every URL to perform scraping.
+    def parse(self, response: Response) -> Item:
+        """Scrapes an item from the URL.
 
         Args:
             response (scrapy.Response): The response from the download handler.
 
+        Raises:
+            DropItem: If the data cannot be scraped from the response.
+
         Yields:
-            SrealityPropertyItem: The scraped data as an Item object
+            SrealityPropertyItem: The scraped data as an Item object.
         """
         for div in response.css(".property"):
             item = ItemLoader(item=SrealityPropertyItem(), response=response)
@@ -68,6 +76,6 @@ class SrealityParser(Spider):
 
             except Exception as e:
                 print(f"Failed to scrape property data: {e}")
-                raise DropItem("Failed to scrape property data: {e}")
+                raise DropItem(f"Failed to scrape property data: {e}") from e
 
             yield item.load_item()

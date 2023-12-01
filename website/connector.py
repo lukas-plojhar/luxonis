@@ -1,14 +1,18 @@
+"""Database connector for PostgreSQL."""
 import os
-import psycopg2
 
 from typing import List
+from typing_extensions import Self
+
+import psycopg2
+
 from psycopg2.extensions import connection, cursor
 
 
 class DatabaseConnector:
     """Singleton for accessing the PostgreSQL dataase."""
 
-    _instance = None
+    _instance: Self = None
 
     def __new__(cls) -> None:
         """Singleton constructor method."""
@@ -17,7 +21,7 @@ class DatabaseConnector:
         return cls._instance
 
     def __init__(self) -> None:
-        """Initializes the database connection and cursor."""
+        """Initialize the database connection and cursor."""
         try:
             self._connection: connection = psycopg2.connect(
                 host=os.environ.get("POSTGRES_HOST"),
@@ -32,27 +36,27 @@ class DatabaseConnector:
             print(f"Failed to connect to database: {e}")
 
     def __del__(self) -> None:
-        """Closes the database connection when the object is deleted."""
+        """Close the database connection when the object is deleted."""
         self._cursor.close()
         self._connection.close()
 
     def retrieve_all_properties(self) -> List[List[str]]:
-        """Fetches all property records from the database.
+        """Fetch all property records from the database.
 
         Returns:
-            List[List[str]]: A list of property records, where each record 
+            List[List[str]]: A list of property records, where each record
             is a list of values.
         """
         try:
             self._cursor.execute("SELECT * FROM results;")
             return self._cursor.fetchall()
-        
+
         except psycopg2.Error as e:
             print("Error fetching database: ", e)
             return []
 
     def create_property(self, name: str, image_url: str) -> None:
-        """Inserts a property record into the database.
+        """Insert a property record into the database.
 
         Args:
             name (str): The name of the property.
@@ -63,6 +67,6 @@ class DatabaseConnector:
                 f"INSERT INTO results (name, image_url) VALUES('{name}', '{image_url}');"
             )
             self._connection.commit()
-        
+
         except psycopg2.Error as e:
             print(f"Error inserting property to the database: {e}")

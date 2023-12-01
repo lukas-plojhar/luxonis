@@ -1,3 +1,4 @@
+"""Configuration file for the Scrapy library."""
 BOT_NAME = "scraper"
 SPIDER_MODULES = ["scraper.spiders"]
 NEWSPIDER_MODULE = "scraper.spiders"

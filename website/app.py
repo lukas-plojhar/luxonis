@@ -1,5 +1,6 @@
-import subprocess
+"""Flask application for frontend."""
 import os
+import subprocess
 
 from typing import List
 
@@ -12,8 +13,13 @@ app: Flask = Flask(__name__)
 
 @app.route("/", methods=["GET"])
 def index() -> str:
-    """Fetches property data from the database and renders an HTML template
-    presenting the data.
+    """Display page with scraped properties.
+
+    Fetches property data from the database and renders an HTML template
+    exposing the data.
+
+    Raises:
+        HTTPException: If data cannot be retrieved from database.
 
     Returns:
         str: The rendered HTML page.
@@ -24,12 +30,14 @@ def index() -> str:
 
     except Exception as e:
         print("Error rendering index template: ", e)
-        raise HTTPException(500, "Internal server error")
+        raise HTTPException(500, "Internal server error") from e
 
 
+# If the script is run directly, start the Sreality spider and
+# run the Flask development server.
 if __name__ == "__main__":
-    """Starts the Sreality spider in a subprocess to scrape data
-    and runs the Flask development server for connections.
-    """
     subprocess.run("scrapy crawl sreality".split())
-    app.run(host=os.environ.get("FLASK_HOST"), port=os.environ.get("FLASK_PORT"))
+    app.run(
+        host=os.environ.get("FLASK_HOST"),
+        port=os.environ.get("FLASK_PORT")
+    )
