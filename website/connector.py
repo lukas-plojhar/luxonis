@@ -1,16 +1,17 @@
 """Database connector for PostgreSQL."""
 import os
 
-from typing import List
+from typing import List, Tuple
 from typing_extensions import Self
 
 import psycopg2
 
+from psycopg2.errors import Error
 from psycopg2.extensions import connection, cursor
 
 
 class DatabaseConnector:
-    """Singleton for accessing the PostgreSQL dataase."""
+    """Singleton for accessing the PostgreSQL database."""
 
     _instance: Self = None
 
@@ -32,7 +33,7 @@ class DatabaseConnector:
             )
             self._cursor: cursor = self._connection.cursor()
 
-        except psycopg2.Error as e:
+        except Error as e:
             print(f"Failed to connect to database: {e}")
 
     def __del__(self) -> None:
@@ -40,19 +41,19 @@ class DatabaseConnector:
         self._cursor.close()
         self._connection.close()
 
-    def retrieve_all_properties(self) -> List[List[str]]:
+    def retrieve_all_properties(self) -> List[Tuple[str]]:
         """Fetch all property records from the database.
 
         Returns:
-            List[List[str]]: A list of property records, where each record
-            is a list of values.
+            List[Tuple[str]]: A list of property records, where each record
+            is a tuple of string values.
         """
         try:
             self._cursor.execute("SELECT * FROM results;")
             return self._cursor.fetchall()
 
-        except psycopg2.Error as e:
-            print("Error fetching database: ", e)
+        except Error as e:
+            print(f"Error fetching database: {e}")
             return []
 
     def create_property(self, name: str, image_url: str) -> None:
@@ -68,5 +69,5 @@ class DatabaseConnector:
             )
             self._connection.commit()
 
-        except psycopg2.Error as e:
+        except Error as e:
             print(f"Error inserting property to the database: {e}")

@@ -4,7 +4,6 @@ from typing import Any, List, Dict
 from scrapy import Spider
 from scrapy.exceptions import DropItem
 from scrapy.http import Request, Response
-from scrapy.item import Item
 from scrapy.loader import ItemLoader
 from scraper.items import SrealityPropertyItem
 from scrapy_playwright.page import PageMethod
@@ -17,7 +16,7 @@ class SrealityParser(Spider):
     dynamic websites.
 
     Attributes:
-        Spider (scrapy.Spider): The Spider base class.
+        Spider: The Spider base class.
     """
 
     # Spider name for identifying the spider in Scrapy
@@ -39,7 +38,7 @@ class SrealityParser(Spider):
         element before yielding the result.
 
         Yields:
-            Iterable[Request]: The downloaded request.
+            Request: The downloaded request.
         """
         meta: Dict[str, Any] = {
             "playwright": True,
@@ -53,7 +52,7 @@ class SrealityParser(Spider):
         for start_url in self.start_urls:
             yield Request(start_url, meta=meta)
 
-    def parse(self, response: Response) -> Item:
+    def parse(self, response: Response) -> SrealityPropertyItem:
         """Scrapes an item from the URL.
 
         Args:
@@ -63,7 +62,8 @@ class SrealityParser(Spider):
             DropItem: If the data cannot be scraped from the response.
 
         Yields:
-            SrealityPropertyItem: The scraped data as an Item object.
+            SrealityPropertyItem: The scraped data as an SrealityPropertyItem
+            object.
         """
         for div in response.css(".property"):
             item = ItemLoader(item=SrealityPropertyItem(), response=response)
